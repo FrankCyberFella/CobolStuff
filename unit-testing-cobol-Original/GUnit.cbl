@@ -2,6 +2,7 @@
        program-id. GUnit.
            
        environment division.
+       configuration section.
            
        data division.
        working-storage section.
@@ -29,8 +30,9 @@
                                            actual-value-comp
                                            test-result
                                            show-values-switch.
+           display "Show Values: " show-values-switch                                     
            if Show-Values
-               display '------ AssertEquals ----------------'.
+               display '------ AssertEquals ----------------'
                display ' expected: ' expected-value-comp
                display '   actual: ' actual-value-comp.
                display '-------------------------------------'.            
@@ -46,9 +48,9 @@
                                               actual-value-comp
                                               test-result
                                               show-values-switch.
-
+           display "Show Values: " show-values-switch     
            if Show-Values
-               display '------ AssertNotEquals --------------'.
+               display '------ AssertNotEquals --------------'
                display ' expected: ' expected-value-comp
                display '   actual: ' actual-value-comp.
                display '-------------------------------------'. 
@@ -67,12 +69,14 @@
                                              test-result
                                              show-values-switch.
 
+           display "Show Values: " show-values-switch                                  
+
            if Show-Values
-               display '------ AssertEquals ----------------'.
+               display '------ AssertEquals ----------------'
                display ' expected: ' 
                          expected-value-string(1:test-length)
                display '   actual: ' 
-                         actual-value-string(1:test-length).
+                         actual-value-string(1:test-length)
                 display '  length: ' test-length.          
                display '-------------------------------------'.            
 
@@ -92,14 +96,15 @@
                                                  show-values-switch.
 
            if Show-Values
-               display '------ AssertNotEquals ----------------'.
+               display '------ AssertNotEquals ----------------'
                display ' expected: ' 
                          expected-value-string(1:test-length)
                display '   actual: ' 
-                         actual-value-string(1:test-length).
-                display '  length: ' test-length.          
-               display '-------------------------------------'.            
-
+                         actual-value-string(1:test-length)
+               display '  length: ' test-length.          
+               display '-------------------------------------'            
+           end-if.
+           
            if expected-value-string(1:test-length)
                             not equal actual-value-string(1:test-length)
              set Test-Passed to True
@@ -108,3 +113,4 @@
            end-if.
            goback.
            
+          

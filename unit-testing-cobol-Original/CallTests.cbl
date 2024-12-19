@@ -57,6 +57,7 @@
 
            Perform 0000-Initialize-Test-Fields
               thru 0000-Initialize-Test-Fields-Exit.
+               
            Display '---- Starting call tests       ----'.
       *****************************************************************
            display ' '.
@@ -720,6 +721,7 @@
            
            Goback.
 
+
        0000-Initialize-Test-Fields.
 
            Move 99 to Float-Expected-4-byte.
@@ -764,5 +766,5 @@
 
 
        0000-Initialize-Test-Fields-Exit.
-           Exit.     
+           Exit. 
     

@@ -11,4 +11,4 @@ To run this project:
 2. Issue the command: `cobc -x CallTests.cbl GUnit.cbl`
 3. If no errors, to run the code: `./callTests`
 
-If you run into issues, contact Frank Fella (Slack or Frank.Fella@Galvanize.com)    
+If you run into issues, contact Frank Fella     
