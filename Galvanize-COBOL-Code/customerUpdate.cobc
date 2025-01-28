@@ -1,0 +1,632 @@
+
+ Identification Division.
+       program-id. customerUpdate.
+       
+       Environment Division.
+       input-output section.
+       file-control.
+
+       select Customer-File-In
+              assign to "./lib/customer.txt"
+              organization is line sequential
+              access mode is sequential.
+              
+       select Customer-File-Out
+              assign to "/myfiles/customerUpdates.txt"
+              organization is line sequential
+              access mode is sequential.      
+
+       Data Division.
+
+       File Section.
+
+        FD Customer-File-In
+           record contains 80.
+
+        01 Customer-File-Record-In  pic x(80).  
+        
+         FD Customer-File-Out
+           record contains 80.
+
+        01 Customer-File-Record-Out  pic x(80).  
+
+       working-storage section.
+
+       01  Process-Customer-Switch pic x(3) value 'yes'.
+           88 WS-Start-Processing           value 'yes'.
+           88 WS-Continue-Processing        value 'yes'.
+           88 WS-Stop-Processing-Requested  value 'no'.
+
+       01  Customer-File-EOF-Switch pic x(3) value 'no'.
+           88 More-Data-To-Read  value 'no'.
+           88 No-More-data       value 'yes'.
+          
+       01 WS-Customer-Record-In.
+            10 CRI-Policy-Number    pic x(8).
+            10 Filler               pic x.
+            10 CRI-First-Name       pic x(10).
+            10 CRI-Last-Name        pic x(10).
+            10 CRI-Street-Addr      pic x(20).
+            10 CRI-City             pic x(17).
+            10 CRI-State-Code       pic x(2).
+            10 Filler               pic x.
+            10 CRI-Zip-Code         pic x(5).
+            10 Filler               pic x(3).
+            10 CRI-Change-Indicator pic x.
+            
+         01 WS-Customer-Record-Display.
+            10 CRD-Policy-Number    pic x(8).
+            10 Filler               pic x.
+            10 CRD-First-Name       pic x(10).
+            10 CRD-Last-Name        pic x(10).
+            10 CRD-Street-Addr      pic x(20).
+            10 CRD-City             pic x(17).
+            10 CRD-State-Code       pic x(2).
+            10 Filler               pic x.
+            10 CRD-Zip-Code         pic x(5).
+            10 Filler               pic x(3).
+            10 CRD-Change-Indicator pic x.    
+            
+         01 WS-New-Customer-Record.
+            10 NCR-Policy-Number    pic x(8).
+            10 Filler               pic x.
+            10 NCR-First-Name       pic x(10).
+            10 NCR-Last-Name        pic x(10).
+            10 NCR-Street-Addr      pic x(20).
+            10 NCR-City             pic x(17).
+            10 NCR-State-Code       pic x(2).
+            10 Filler               pic x.
+            10 NCR-Zip-Code         pic x(5).
+            10 Filler               pic x(3).
+            10 NCR-Change-Indicator pic x.  
+            
+       01  Processing-Switch    Pic x(3).
+           88 Start-Processing         Value 'Yes'.
+           88 End-Processing-Requested Value 'No'.
+
+       01  WS-Current-Timestamp.
+           05 WS-Current-Year                pic 9(4). 
+           05 WS-Current-Month               pic 9(2). 
+           05 WS-Current-Day                 pic 9(2).
+           05 WS-Current-Hour                pic 9(2).
+           05 WS-Current-Minute              pic 9(2).
+           05 WS-Current-Second              pic 9(2).  
+           05 WS-Current-HundrethSeconds     pic 9(2).  
+           
+        01 WS-Current-Customers.
+           05 WS-Current-Customer-Table
+              occurs 5000 times indexed by Curr-Cust-Index.
+              10 CCT-Policy-Number    pic x(8).
+              10 Filler               pic x.
+              10 CCT-First-Name       pic x(10).
+              10 CCT-Last-Name        pic x(10).
+              10 CCT-Street-Addr      pic x(20).
+              10 CCT-City             pic x(17).
+              10 CCT-State-Code       pic x(2).
+              10 Filler               pic x.
+              10 CCT-Zip-Code         pic x(5).
+              10 Filler               pic x(3).
+              10 CCT-Change-Indicator pic x.
+              
+        01  WS-Updated-Customers.
+            05 WS-Updated-Customer-Table
+                  occurs 5000 times indexed by Updt-Cust-Index.
+               10 UCT-Policy-Number    pic x(8).
+               10 Filler               pic x.
+               10 UCT-First-Name       pic x(10).
+               10 UCT-Last-Name        pic x(10).
+               10 UCT-Street-Addr      pic x(20).
+               10 UCT-City             pic x(17).
+               10 UCT-State-Code       pic x(2).
+               10 Filler               pic x.
+               10 UCT-Zip-Code         pic x(5).
+               10 Filler               pic x(3).
+               10 UCT-Change-Indicator pic x.
+               
+        01  WS-Processing-Option         Pic s99  value -1.
+            88 WS-Valid-Processing-Opt   value 0 thru 5.
+            88 WS-Invalid-Processing-Opt value -1.
+            88 WS-Exit                   value 0.
+            88 WS-Add-Customer           value 1.
+            88 WS-Update-Customer        value 2.
+            88 WS-Delete-Customer        value 3.
+            88 WS-Display-All            value 4.
+            88 WS-Display-By-Policy      value 5.
+            
+        
+        01  WS-Customer-Counter          pic s9(4)    comp.
+        
+        01  WS-Customer-Number-To-Change Pic s9(4)    comp.
+        
+        01  WS-Search-Policy-Number      Pic x(8).
+        
+        01  WS-Field-Number-To-Change    Pic s9(4)    comp.
+            88 WS-Change-First-Name      value 1.
+            88 WS-Change-Last-Name       value 2.
+            88 WS-Change-Street-Addr     value 3.
+            88 WS-Change-City            value 4.
+            88 WS-Change-State           value 5.
+            88 WS-Change-Zip-Code        value 6.
+            
+        01 WS-New-First-Name           Pic x(10). 
+        01 WS-New-Last-Name            Pic x(10).    
+        01 WS-New-Street-Address       Pic x(20). 
+        01 WS-New-City                 Pic x(10).    
+        01 WS-New-State-Code           Pic x(2). 
+        01 WS-New-Zip-Code             Pic x(10).    
+            
+        01  WS-Table-Row-Number        pic zzz9.
+        
+        01  Ws-Any-More-Custs          pic X.
+        
+        01  WS-User-Selected-Row-Number-Switch  pic X.
+            88 WS-Bad-Row-entered    value 'N'.
+            88 WS-Valid-Row-Selected value 'Y'.
+            
+        01  WS-User-Selected-Field-Number-Switch  pic X.
+            88 WS-Bad-Field-Number-entered    value 'N'.
+            88 WS-Valid-Field-Number-Selected value 'Y'.    
+            
+        01  WS-Customer-Update-Switch Pic X.
+            88 WS-All-Updates-Done    Value 'Y'.
+            88 WS-Updates-Incomplete  Value 'N'.
+            
+        01  WS-Customer-Delete-Switch Pic X.
+            88 WS-End-Delete-Process       Value 'N'.
+            88 WS-Start-Delete-Process     Value 'Y'.        
+            
+        01  WS-Any-More-Response    pic x.
+            88 WS-Done-Updating     value 'N' , 'n'.
+            88 WS-More-Updates      value 'Y' , 'y'.
+            
+
+        PROCEDURE DIVISION.
+        
+            Perform 0000-Display-Welcome-Message.
+        
+            Perform 1000-Initialization.
+            
+            Perform until End-Processing-Requested
+            
+                Perform 2000-Get-Processing-Option
+            
+                Evaluate true
+                
+                    When WS-Exit
+                         Set End-Processing-Requested to True
+                    When WS-Add-Customer
+                         Perform 3100-Add-A-Customer
+                    When WS-Update-Customer
+                         Perform 3200-Update-A-Customer
+                    When WS-Delete-Customer
+                         Perform 3300-Delete-A-Customer 
+                    When WS-Display-All
+                         Perform 3400-Display-All-Customers 
+                    When WS-Display-By-Policy
+                         Perform 3500-Display-Cust-By-Policy
+                End-Evaluate
+                
+            End-Perform.
+            
+            Perform 9999-Termination-Process.
+   
+            Goback.
+            
+       0000-Display-Welcome-Message.
+            Display ' '.
+            Display '--------------------------------------------------------'.
+            Display ' Welcome to Our Excellent Customer Mangament App!       '.
+            Display '--------------------------------------------------------'.
+       0000-Exit.
+           Exit.    
+            
+       1000-Initialization.
+       
+
+            perform 8100-Load-Customer-Data. 
+            
+            perform 8200-Copy-Current-Data-to-Update-Area.
+            
+       1000-Exit.
+           Exit.
+            
+       2000-Get-Processing-Option.
+       
+           Set WS-Invalid-Processing-Opt to true.
+       
+           Perform until WS-Valid-Processing-Opt
+           
+               Display ' '
+               Display 'Please choose your processing option: '
+               Display ' '
+               Display '1 - Add a Customer'
+               Display '2 - Update a Customer'
+               Display '3 - Delete a Customer'
+               Display '4 - Display all Customers'
+               Display '5 - Find a Customer by Policy Number'
+               Display ' '
+               Display '0 - Exit'
+               
+               Accept WS-Processing-Option
+               
+           end-perform.
+           
+         
+       2000-Exit.
+           Exit.
+           
+       3100-Add-A-Customer.
+       
+            Display 'Please enter data for new customer: '.
+            Display 'Enter Policy Number: '.
+            Accept NCR-Policy-Number.
+            
+            Display 'Enter First Name: '.
+            Accept NCR-First-Name.
+        
+            Display 'Enter Last Name: '.
+            Accept NCR-Last-Name.
+            
+            Display 'Enter Street Address: '.
+            Accept NCR-Street-Addr.
+            
+            Display 'Enter City: '.
+            Accept NCR-City.
+            
+            Display 'Enter State Code: '.
+            Accept NCR-State-Code
+            
+            Display 'Enter Zip Code: '.
+            Accept NCR-Zip-Code.
+
+            Move 'N' to NCR-Change-Indicator.
+            
+            Add 1 to WS-Customer-Counter.
+            
+            Move WS-New-Customer-Record to WS-Updated-Customer-Table(WS-Customer-Counter).
+            
+       
+       3100-Exit.
+           Exit.
+           
+       3200-Update-A-Customer.    
+     
+            Display ' '.
+            Display '---- Update A Customer ----'
+        
+            perform until WS-stop-processing-requested
+        
+                perform 7200-Display-Current-Data 
+                
+                perform 7300-Get-Customer-To-Change
+                
+                if WS-Customer-Number-To-Change equals 0
+                   then set WS-Stop-Processing-Requested to True
+                   next sentence
+                end-if   
+            
+                Set WS-Updates-Incomplete to True
+            
+                perform 7400-Change-Customer-Data
+                  until WS-All-Updates-Done
+            
+            end-perform.
+       
+       3200-Exit.
+           Exit.      
+           
+       3300-Delete-A-Customer.
+       
+            perform 7200-Display-Current-Data 
+            
+            Display ' '
+            Display '---- Delete A Customer ----'
+        
+            perform 7300-Get-Customer-To-Change.
+            
+            if WS-Customer-Number-To-Change equals 0
+               then set WS-End-Delete-Process to True
+               next sentence
+            end-if   
+            
+            Perform varying Updt-Cust-Index
+               from WS-Customer-Number-to-Change By 1
+               until Updt-Cust-Index > WS-Customer-Counter - 1
+               
+               move WS-Updated-Customer-Table(Updt-Cust-Index + 1)
+                 to WS-Updated-Customer-Table(Updt-Cust-Index)
+            end-perform.
+            
+            move spaces to WS-Updated-Customer-Table(Updt-Cust-Index).
+            
+            subtract 1 from WS-Customer-Counter.
+       
+       3300-Exit.
+           Exit.   
+           
+                   
+       3400-Display-All-Customers.
+       
+            Perform 7200-Display-Current-Data.
+       
+       3400-Exit.
+           Exit.   
+           
+                    
+       3500-Display-Cust-By-Policy.
+       
+            Display ' '.
+            Display 'Enter Policy Number of Customer: '.
+            Accept WS-Search-Policy-Number.
+            
+            Set Updt-Cust-Index to 1.
+            Search WS-Updated-Customer-Table
+              At End
+                 Display ' '
+                 Display 'Policy Number: ' WS-Search-Policy-Number ' NOT found'
+              When UCT-Policy-Number(Updt-Cust-Index) = WS-Search-Policy-Number
+                 Display 'Customer found!'
+                 Display WS-Updated-Customer-Table(Updt-Cust-Index)
+
+            End-Search.     
+       
+       3500-Exit.
+           Exit.   
+         
+           
+       7000-Get-A-Customer-Record.  
+            Read customer-file-in into WS-Customer-Record-In
+                at end set No-More-Data to true.
+       7000-Exit.
+       
+       7100-Display-Customer-Data.
+       
+            Display '------------------------------------------'.
+            Display '  Policy #: ' CRD-Policy-Number.
+            Display 'First Name: ' CRD-First-Name.
+            Display ' Last Name: ' CRD-Last-Name.
+            Display '    Street: ' CRD-Street-Addr.
+            Display '      City: ' CRD-City.
+            Display '     State: ' CRD-State-Code.
+            Display '       Zip: ' CRD-Zip-Code.
+            Display 'Change Ind: ' CRD-Change-Indicator.
+       
+       7100-Exit.
+           Exit.
+           
+       7200-Display-Current-Data.
+       
+            Display " ".
+            Display "--------------------------------------------------------------------------------------".
+            Display "      Current Customer Data".
+            Display "--------------------------------------------------------------------------------------".
+            Display " ".
+       
+            Display "       Policy   First     Last"
+            Display "       Number   Name      Name        Street Address        City         ST  Zip  Chng"
+            Display".      -------- ---------- -------- ------------------- ---------------  -- ----- ----".
+            perform varying Updt-Cust-Index
+                       from 1 by 1
+                    until Updt-Cust-Index > WS-customer-counter
+    
+                move Updt-Cust-index to Ws-Table-Row-Number
+                Display WS-Table-Row-Number
+                        ' - '
+                        WS-Updated-Customer-Table(Updt-cust-index)
+                  
+            end-perform.
+        7200-Exit.
+            Exit.  
+            
+        7300-Get-Customer-To-Change.
+        
+            Set Ws-Bad-Row-Entered to True.
+        
+            perform until WS-Valid-Row-Selected
+        
+                Move WS-Customer-Counter to WS-Table-Row-Number
+                Display " "
+                Display "Please enter the number of the Customer you would like to process "
+                Display  "(1 to " Function Trim(WS-Table-Row-Number) " or 0 to end )"
+            
+                Accept WS-Customer-Number-To-Change
+
+                if WS-Customer-Number-To-Change is numeric
+                and WS-Customer-Number-To-Change is greater than -1
+                and WS-Customer-Number-To-Change is not greater than WS-Customer-Counter
+                Then
+                   Set WS-Valid-Row-Selected to True
+                Else
+                   Set WS-Bad-Row-Entered to true
+                End-if   
+                End-Perform.  
+        7300-Exit.
+            Exit.
+            
+        7400-Change-Customer-Data.
+        
+            Perform 7500-Display-Updated-Data.
+            
+            Perform 7510-Get-Field-Number-to-Change.
+            
+            if WS-Field-Number-To-Change not equals  0
+               then 
+                Perform 7520-Make-Field-Change
+                
+                Perform 7500-Display-Updated-Data
+                
+                Perform 7530-Ask-If-Updates-Done
+            else
+                Set Ws-All-Updates-Done to true
+            end-if.
+            
+        7400-exit.
+            Exit.
+              
+        7500-Display-Updated-Data.
+       
+            Display '----------------------------------------------'.
+            Display '  Current Data Values'.
+            Display '   (Note: Policy Number'. 
+            Display '      and Change Indicator may not be changed)'.
+            Display '----------------------------------------------'.
+            Display '      Policy #: ' UCT-Policy-Number(WS-Customer-Number-To-Change).
+            Display '1 - First Name: ' UCT-First-Name(WS-Customer-Number-To-Change).
+            Display '2 -  Last Name: ' UCT-Last-Name(WS-Customer-Number-To-Change).
+            Display '3 -     Street: ' UCT-Street-Addr(WS-Customer-Number-To-Change).
+            Display '4 -       City: ' UCT-City(WS-Customer-Number-To-Change).
+            Display '5 -      State: ' UCT-State-Code(WS-Customer-Number-To-Change).
+            Display '6 -        Zip: ' UCT-Zip-Code(WS-Customer-Number-To-Change).
+            Display '    Change Ind: ' UCT-Change-Indicator(WS-Customer-Number-To-Change).
+       
+       7500-Exit.
+           Exit.  
+           
+       7510-Get-Field-Number-To-Change.
+       
+        Set Ws-Bad-Field-Number-Entered to True.
+        
+        perform until WS-Valid-Field-Number-Selected
+    
+            Move 6 to WS-Table-Row-Number
+            Display " "
+            Display "Please enter the number of the Field you would like to change "
+            Display  "(1 to " Function Trim(WS-Table-Row-Number)" or 0 to exit)"
+        
+            Accept WS-Field-Number-To-Change
+
+            if WS-Field-Number-To-Change is Not numeric
+            or WS-Field-Number-To-Change is greater than -1
+            or WS-Field-Number-To-Change is greater than 6
+            Then
+               Set WS-Valid-Field-Number-Selected to True
+            Else
+               Set WS-Bad-Field-Number-Entered    to true
+            End-if   
+            End-Perform.  
+   
+       
+       7510-Exit.
+           Exit.
+           
+       7520-Make-Field-Change.
+       
+            Evaluate True
+               When WS-Change-First-Name
+                    Display 'Enter new first name: '
+                    Accept ws-New-first-name
+                    move ws-new-first-name to UCT-First-Name(WS-Customer-Number-To-Change)
+               
+                When WS-Change-Last-Name
+                    Display 'Enter new last name: '
+                    Accept ws-New-last-name
+                    move ws-new-last-name to UCT-Last-Name(WS-Customer-Number-To-Change)
+                    
+                 When WS-Change-Street-Addr
+                    Display 'Enter new Street Address: '
+                    Accept ws-New-Street-Address
+                    move ws-new-Street-Address to UCT-Street-Addr(WS-Customer-Number-To-Change)    
+                 
+                 When WS-Change-City
+                    Display 'Enter new City: '
+                    Accept ws-New-City
+                    move ws-new-City to UCT-City(WS-Customer-Number-To-Change)
+                    
+                 When WS-Change-State
+                    Display 'Enter new State: '
+                    Accept ws-New-State-Code
+                    move ws-new-State-Code to UCT-State-Code(WS-Customer-Number-To-Change)    
+               
+                 When WS-Change-Zip-Code
+                    Display 'Enter new Zip Code: '
+                    Accept ws-New-Zip-Code
+                    move ws-new-Zip-Code to UCT-Zip-Code(WS-Customer-Number-To-Change)
+               
+               When Other
+                    Display 'Not Implemented'
+            
+            End-Evaluate.
+            
+            Move 'U' to UCT-Change-Indicator(WS-Customer-Number-To-Change).
+       
+       7520-Exit.
+           Exit.
+           
+       7530-Ask-If-Updates-Done.    
+            
+            Display ' '.
+            Display 'Any other updates? (Y / N)'.
+            Accept WS-Any-More-Response.
+            If WS-More-Updates
+               Set WS-Updates-Incomplete to True
+            Else
+               Set WS-All-Updates-Done to True.
+           
+        7530-Exit.
+            exit.
+        
+       8000-Get-Current-Date.
+
+            Move function current-date to WS-Current-Timestamp.
+
+       8000-Get-Current-Date-Exit.
+           Exit.
+           
+       8100-Load-Customer-Data.    
+            open input customer-file-in.
+            perform 7000-Get-A-Customer-Record.
+            perform until no-more-data
+                add 1 to Ws-customer-counter
+                move WS-Customer-Record-In to WS-Current-Customer-Table(WS-customer-counter)
+                Perform 7000-Get-A-Customer-Record
+            end-perform.    
+            close customer-file-in.
+        8100-Exit.
+            Exit.       
+            
+        8200-Copy-Current-Data-to-Update-Area.
+        
+             move WS-Current-Customers to WS-Updated-Customers.
+             
+        8200-Exit.
+            exit.
+            
+            
+        8900-Write-Updated-File.
+        
+             open output Customer-File-Out.
+             
+             perform varying updt-cust-index
+                from 1 by 1
+               until updt-cust-index > Ws-Customer-Counter
+               
+               Write Customer-File-Record-Out
+                from WS-Updated-Customer-Table(updt-cust-index)
+            
+            end-perform.
+            
+            close Customer-File-Out.
+        
+        
+        8900-Exit.
+            Exit.
+            
+       9900-Write-Closing-Message.    
+        
+           Display ' '.
+           Display '----------------------------------------------------------'.
+           Display ' Thanks for visiting Our Excellent Customer Mangament App!       '.
+           Display '----------------------------------------------------------'.
+           Display ' '.
+        
+       9900-Exit.
+           Exit.
+           
+       9999-Termination-Process.
+       
+        Perform 8900-Write-Updated-File.
+        
+        Perform 9900-Write-Closing-Message.
+        
+       9999-Exit.
+           Exit.
