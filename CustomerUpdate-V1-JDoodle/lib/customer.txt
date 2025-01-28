@@ -1,0 +1,5 @@
+12345678 Jack      Frost     1492 North Pole Ln  North Pole       AK 99703   N
+98765432 Wyatt     Earp      10 OK Corral        Tombstone        AZ 86638   N
+72617202 Abe       Lincoln   1600 Pennsyvania AveWashington       DC 20501   N
+00293816 Neil      Armstrong 1969 Moon St        Wapakoneta       OH 45895   N
+38372537 Charlie   Brown     14 Peanuts Lane     Hennepin County  MN 55345   N

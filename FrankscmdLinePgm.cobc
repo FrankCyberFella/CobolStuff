@@ -1,0 +1,31 @@
+*> Welcome to JDoodle!
+*>
+*> You can execute code here in 88 languages. Right now you’re in the COBOL IDE.
+*>
+*>  1. Click the orange Execute button ▶ to execute the sample code below and see how it works.
+*>  2. Want help writing or debugging code? Type a query into JDroid on the right hand side ---------------->
+*>  3. Try the menu buttons on the left. Save your file, share code with friends and open saved projects.
+*>
+*> Want to change languages? Try the search bar up the top.
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. HELLO-WORLD.
+DATA DIVISION.
+    WORKING-STORAGE SECTION.
+    01 WS-Command-Line-Options    pic x(256).
+    01 WS-Program-Name            pic x(50).
+    01 WS-Command-Line-Values     pic x(256).
+
+PROCEDURE DIVISION.
+       Accept Ws-command-line-options from command-line.
+       Display 'Command line options: ' Ws-command-line-options.
+       
+       Unstring WS-Command-Line-options
+                delimited by ' '
+                into WS-Program-Name
+                     WS-Command-Line-Values.
+                     
+       Display 'Program Name: ' Ws-Program-Name.
+       Display 'Program Args: ' ws-Command-Line-Values.
+       
+       goback.

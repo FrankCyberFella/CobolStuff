@@ -1,0 +1,105 @@
+*****************************************************************
+      * Result of Test Passed Back to Caller
+      ***************************************************************** 
+       01  Test-Result          pic x(5).
+           88  Test-Passed      value 'True'.
+           88  Test-Failed      value 'False'.
+      *****************************************************************
+      * Switch to by caller to indicate if they want values displayed 
+      ***************************************************************** 
+       01  Show-Values-Switch   pic x(5).
+           88  Show-Values      value 'Yes'.
+           88  Not-Show-Values  value 'No'.
+      *****************************************************************
+      * Actual Data Type Conditional Values
+      ***************************************************************** 
+       01  Actual-Data-Type            pic x(15).
+           88 Actual-comp-1            value 'float-4-byte'.
+           88 Actual-comp-2            value 'double-8-byte'.
+           88 Actual-Pic-S9-4-comp     value 'binary-2-byte'.
+           88 Actual-Pic-S9-9-comp     value 'binary-4-byte'.
+           88 Actual-Pic-S9-18-comp    value 'binary-8-byte'.
+           88 Actual-Pic-S9-1-comp-3   value 'decimal-1-byte'.
+           88 Actual-Pic-S9-3-comp-3   value 'decimal-2-byte'.
+           88 Actual-Pic-S9-5-comp-3   value 'decimal-3-byte'.
+           88 Actual-Pic-S9-7-comp-3   value 'decimal-4-byte'.
+           88 Actual-Pic-S9-9-comp-3   value 'decimal-5-byte'.
+           88 Actual-Pic-S9-11-comp-3  value 'decimal-6-byte'.
+           88 Actual-Pic-S9-13-comp-3  value 'decimal-7-byte'.
+           88 Actual-Pic-S9-15-comp-3  value 'decimal-8-byte'.
+      *****************************************************************
+      * Expected Data Type Conditional Values
+      ***************************************************************** 
+       01  Expected-Data-Type          pic x(15).
+           88 Expected-comp-1            value 'float-4-byte'.
+           88 Expected-comp-2            value 'double-8-byte'.
+           88 Expected-Pic-S9-4-comp     value 'binary-2-byte'.
+           88 Expected-Pic-S9-9-comp     value 'binary-4-byte'.
+           88 Expected-Pic-S9-18-comp    value 'binary-8-byte'.
+           88 Expected-Pic-S9-1-comp-3   value 'decimal-1-byte'.
+           88 Expected-Pic-S9-3-comp-3   value 'decimal-2-byte'.
+           88 Expected-Pic-S9-5-comp-3   value 'decimActualal-3-byte'.
+           88 Expected-Pic-S9-7-comp-3   value 'decimal-4-byte'.
+           88 Expected-Pic-S9-9-comp-3   value 'decimal-5-byte'.
+           88 Expected-Pic-S9-11-comp-3  value 'decimal-6-byte'.
+           88 Expected-Pic-S9-13-comp-3  value 'decimal-7-byte'.
+           88 Expected-Pic-S9-15-comp-3  value 'decimal-8-byte'.
+      *****************************************************************
+      * Actual Value Of Data Passed To Be Used In The Tests
+      *****************************************************************            
+       01  Actual-value-comp-2        comp-2.
+
+       01  Actual-comp-4-byte   redefines Actual-value-comp-2
+                                        comp   pic s9(9).
+       01  Actual-comp-8-byte   redefines Actual-value-comp-2
+                                        comp   pic s9(18).                                                                                                   
+       01  Actual-comp-3-1-byte redefines Actual-value-comp-2 
+                                        comp-3  pic s9(1).                                      
+       01  Actual-comp-3-2-byte redefines Actual-value-comp-2 
+                                        comp-3  pic s9(3).  
+       01  Actual-comp-3-3-byte redefines Actual-value-comp-2 
+                                        comp-3  pic s9(5).  
+       01  Actual-comp-3-4-byte redefines Actual-value-comp-2 
+                                        comp-3  pic s9(7).  
+       01  Actual-comp-3-5-byte redefines Actual-value-comp-2 
+                                        comp-3  pic s9(9).  
+       01  Actual-comp-3-6-byte redefines Actual-value-comp-2 
+                                        comp-3  pic s9(11).                                          
+       01  Actual-comp-3-7-byte redefines Actual-value-comp-2 
+                                        comp-3  pic s9(13).  
+       01  Actual-comp-3-8-byte redefines Actual-value-comp-2 
+                                        comp-3  pic s9(15).  
+      *****************************************************************
+      * Expected Value Of Data Passed To Be Used In The Tests
+      *****************************************************************            
+       01  Expected-value-comp-2        comp-2.
+
+       01  Expected-comp-4-byte   redefines Expected-value-comp-2
+                                        comp   pic s9(9).
+       01  Expected-comp-8-byte   redefines Expected-value-comp-2
+                                        comp   pic s9(18).                                                                                                   
+       01  Expected-comp-3-1-byte redefines Expected-value-comp-2 
+                                        comp-3  pic s9(1).                                      
+       01  Expected-comp-3-2-byte redefines Expected-value-comp-2 
+                                        comp-3  pic s9(3).  
+       01  Expected-comp-3-3-byte redefines Expected-value-comp-2 
+                                        comp-3  pic s9(5).  
+       01  Expected-comp-3-4-byte redefines Expected-value-comp-2 
+                                        comp-3  pic s9(7).  
+       01  Expected-comp-3-5-byte redefines Expected-value-comp-2 
+                                        comp-3  pic s9(9).  
+       01  Expected-comp-3-6-byte redefines Expected-value-comp-2 
+                                        comp-3  pic s9(11).                                          
+       01  Expected-comp-3-7-byte redefines Expected-value-comp-2 
+                                        comp-3  pic s9(13).  
+       01  Expected-comp-3-8-byte redefines Expected-value-comp-2 
+                                        comp-3  pic s9(15).   
+     *****************************************************************
+      * Actual and Expected Value String 
+      * Data Passed To Be Used In The Tests
+      ***************************************************************** 
+
+       01 Actual-Value-String      pic x(32767).
+       01 Expected-Value-String    pic x(32767).   
+
+       01 Test-Length              pic s9(9) comp.   
