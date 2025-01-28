@@ -1,0 +1,13 @@
+*.dylib
+build/*
+!build/.gitkeep
+.DS_Store
+COBOL-Training/consoleApp
+zapp.yaml
+roman-numerals-tdd/Roman-Numerals-Program
+roman-numerals-tdd/Roman-Numerals
+GUnit-Galvanize-Testing-Framework/CallTests
+CountWords-with-UNSTRING/CountWords
+collecties/Collecties
+GUnit-Demo/GUnitDemo
+COBOL-Training/consoleApp
