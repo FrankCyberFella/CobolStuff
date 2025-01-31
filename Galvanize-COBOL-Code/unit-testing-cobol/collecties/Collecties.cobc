@@ -1,0 +1,381 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. MainProgram.
+       ENVIRONMENT DIVISION.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  INPUT-STRING PIC X(1024).
+       01  OUTPUT-STRING PIC X(1024).
+       01  NEW-LINE PIC X VALUE X'0A'.
+       01  PENDING-RENAME PIC X(64) VALUE SPACES.
+       01  CURRENT-BIOME PIC X(64) VALUE SPACES.
+       01  CURRENT-COLLECTIE.
+           05  COLLECTIE-ID PIC 999.
+           05  collectie-name PIC X(64).
+           05  species PIC X(64).
+           05  collectie-type PIC X(64).
+           05  sound PIC X(64).
+           05  preferred-biome PIC X(64).
+           05  attack-power PIC 999.
+           05  defend-floor pic 999.
+           05  graphic PIC X(1024).
+
+       01  STATE-GROUP PIC X(64).
+           88 STATE-INIT 
+               VALUE 'STATE-INIT'. 
+           88 STATE-QUIT 
+               VALUE 'STATE-QUIT'. 
+           88 STATE-WELCOME 
+               VALUE 'STATE-WELCOME'. 
+           88 STATE-GIVE-INITIAL-COLLECTIE 
+               VALUE 'STATE-GIVE-INITIAL-COLLECTIE'. 
+           88 STATE-PROMPT-TO-RENAME-NEW-COLLECTIE
+               VALUE 'STATE-PROMPT-TO-RENAME-NEW-COLLECTIE'.
+           88 STATE-RENAME-NEW-COLLECTIE
+               VALUE 'STATE-RENAME-NEW-COLLECTIE'.
+           88 STATE-ENTER-BIOME
+               VALUE 'STATE-ENTER-BIOME'.
+           88 STATE-TRAVEL
+               VALUE 'STATE-TRAVEL'.
+           88 STATE-EXPLORE
+               VALUE 'STATE-EXPLORE'.
+           88 STATE-FIND-CONSUMABLE
+               VALUE 'STATE-FIND-CONSUMABLE'.
+           88 STATE-MANAGE-COLLECTION
+               VALUE 'STATE-MANAGE-COLLECTION'.
+           88 STATE-SHOW-COLLECTION
+               VALUE 'STATE-SHOW-COLLECTION'.
+           88 STATE-SHOW-CONSUMABLES
+               VALUE 'STATE-SHOW-CONSUMABLES'.
+           88 STATE-FEED-COLLECTIE
+               VALUE 'STATE-FEED-COLLECTIE'.
+           88 STATE-RENAME-EXISTING-COLLECTIE
+               VALUE 'STATE-RENAME-EXISTING-COLLECTIE'.
+           88 STATE-SET-PROTECTOR
+               VALUE 'STATE-SET-PROTECTOR'.
+           88 STATE-DONE
+               VALUE 'STATE-DONE'.
+           88 STATE-UNRECOGNIZED-STATE
+               VALUE 'STATE-UNRECOGNIZED-STATE'.
+       
+       
+       PROCEDURE DIVISION.
+
+       MAIN.
+           SET STATE-INIT TO TRUE.
+           PERFORM GAME-LOOP until STATE-DONE.
+           STOP RUN.
+
+       GAME-LOOP.
+           
+           EVALUATE True
+              WHEN STATE-INIT
+                   PERFORM INIT
+              WHEN STATE-QUIT
+                     PERFORM QUIT
+              WHEN STATE-WELCOME
+                     PERFORM WELCOME
+              WHEN STATE-GIVE-INITIAL-COLLECTIE
+                     PERFORM GIVE-INITIAL-COLLECTIE
+              WHEN STATE-PROMPT-TO-RENAME-NEW-COLLECTIE
+                     PERFORM PROMPT-TO-RENAME-NEW-COLLECTIE
+              WHEN STATE-RENAME-NEW-COLLECTIE
+                     PERFORM RENAME-NEW-COLLECTIE
+              WHEN STATE-ENTER-BIOME
+                     PERFORM ENTER-BIOME
+              WHEN STATE-TRAVEL
+                     PERFORM TRAVEL
+              WHEN STATE-EXPLORE
+                     PERFORM EXPLORE
+              WHEN STATE-FIND-CONSUMABLE
+                     PERFORM FIND-CONSUMABLE
+              WHEN STATE-MANAGE-COLLECTION
+                     PERFORM MANAGE-COLLECTION
+              WHEN STATE-SHOW-COLLECTION
+                     PERFORM SHOW-COLLECTION
+              WHEN STATE-SHOW-CONSUMABLES
+                     PERFORM SHOW-CONSUMABLES
+              WHEN STATE-FEED-COLLECTIE
+                     PERFORM FEED-COLLECTIE
+              WHEN STATE-RENAME-EXISTING-COLLECTIE
+                   PERFORM RENAME-EXISTING-COLLECTIE
+              WHEN STATE-SET-PROTECTOR
+                     PERFORM SET-PROTECTOR
+              WHEN OTHER
+                     PERFORM UNRECOGNIZED-STATE
+           END-EVALUATE.
+           
+           
+       INIT.
+           CALL 'INIT-BIOMES'.
+           CALL 'INIT-CONSUMABLES'.
+           CALL 'GET-RANDOM-BIOME' USING CURRENT-BIOME.
+           SET STATE-WELCOME TO TRUE.
+           
+
+       WELCOME.
+           STRING 
+               '*------------------------------------------*'
+               NEW-LINE
+               '| Welcome to the wild world of Collecties! |'
+               NEW-LINE
+               '*------------------------------------------*'
+               into output-string.
+
+           PERFORM PRINT.
+
+           SET STATE-GIVE-INITIAL-COLLECTIE TO TRUE.
+
+       UNRECOGNIZED-STATE.
+           STRING 'unrecognized state ' STATE-GROUP '!!!' 
+                       INTO output-string.
+           PERFORM PRINT.
+           SET STATE-QUIT TO TRUE. 
+
+       QUIT.
+           MOVE 'Thank you for playing!' TO output-string.
+           PERFORM PRINT.
+           SET STATE-DONE TO TRUE.
+      
+
+       GIVE-INITIAL-COLLECTIE.
+           CALL 'ADD-REXTORE' USING CURRENT-COLLECTIE.
+              
+           STRING 
+               'To start your collection you were given a '
+               FUNCTION TRIM(species of CURRENT-COLLECTIE)
+               '!'
+               INTO output-string.
+           PERFORM PRINT.
+           SET STATE-PROMPT-TO-RENAME-NEW-COLLECTIE TO TRUE.
+           
+
+       PROMPT-TO-RENAME-NEW-COLLECTIE.
+              
+           STRING 'Would you like to rename your new '
+               FUNCTION TRIM(species of CURRENT-COLLECTIE)
+               '?'
+               NEW-LINE
+               '[y/n]?: ' 
+               INTO output-string.
+           
+              PERFORM PRINT-INLINE.
+
+              PERFORM ACCEPT-INPUT.
+
+              IF FUNCTION LOWER-CASE(input-string) EQUALS 'y' THEN
+                  SET STATE-RENAME-NEW-COLLECTIE TO TRUE
+              ELSE
+                  SET STATE-ENTER-BIOME TO TRUE
+              END-IF.
+
+       RENAME-NEW-COLLECTIE.
+
+              
+              STRING 
+                   'Renaming '
+                   FUNCTION TRIM(species of CURRENT-COLLECTIE) 
+                   ' named '
+                   INTO output-string.
+
+                 PERFORM PRINT-INLINE.
+
+                 STRING
+                         FUNCTION 
+                         TRIM(collectie-name of CURRENT-COLLECTIE)
+                         '...' 
+                         NEW-LINE
+                         '?: '
+                         INTO output-string.
+                 
+                 PERFORM PRINT-INLINE.
+
+
+              PERFORM ACCEPT-INPUT.
+
+              MOVE input-string TO PENDING-RENAME.
+              STRING 
+                     'You have chosen the name: ' 
+                     input-string
+                  INTO output-string
+
+              PERFORM PRINT.
+
+              STRING 
+                  'Confirm rename?' 
+                  new-line 
+                  '[y/n]?: '
+                  INTO output-string.
+              
+              PERFORM PRINT-INLINE.
+              PERFORM ACCEPT-INPUT.
+
+           IF FUNCTION LOWER-CASE(input-string) = 'y' 
+               CALL 'RENAME-COLLECTIE' 
+                     USING CURRENT-COLLECTIE, PENDING-RENAME
+      *>    TODO: show rename confirmation?    
+                SET STATE-ENTER-BIOME TO TRUE
+           ELSE 
+               SET STATE-RENAME-NEW-COLLECTIE TO TRUE       
+           END-IF.
+
+       ENTER-BIOME.
+           STRING 
+              'You find yourself in a '
+               FUNCTION TRIM(current-biome) 
+               ' biome.' NEW-LINE
+               'What would you like to do?' NEW-LINE
+               '[1] Travel to the next Biome' NEW-LINE
+               '[2] Explore' NEW-LINE
+               '[3] Manage Collection' NEW-LINE
+               '[4] Exit' NEW-LINE
+               '?: '
+               INTO output-string.
+
+           PERFORM PRINT-INLINE.
+
+           PERFORM ACCEPT-INPUT.
+
+           EVALUATE input-string
+               WHEN '1'
+                   SET STATE-TRAVEL TO TRUE
+               WHEN '2'
+                   SET STATE-EXPLORE TO TRUE
+               WHEN '3'
+                   SET STATE-MANAGE-COLLECTION TO TRUE
+               WHEN '4'
+                   SET STATE-QUIT TO TRUE
+               WHEN OTHER
+                   STRING 'unrecognized choice ' input-string 
+                       INTO output-string
+                   PERFORM PRINT
+           END-EVALUATE.
+           
+
+       TRAVEL.
+           CALL 'GET-RANDOM-BIOME' USING CURRENT-BIOME.
+           MOVE 'traveling...' TO output-string.
+           PERFORM PRINT.
+           SET STATE-ENTER-BIOME TO TRUE.
+
+       EXPLORE.
+              STRING 
+               'Exploring the '
+               FUNCTION TRIM(CURRENT-BIOME) 
+               ' biome around you......' 
+               INTO output-string.
+           
+           PERFORM PRINT.
+
+           SET STATE-FIND-CONSUMABLE TO TRUE.
+
+       FIND-CONSUMABLE.
+              CALL 'GET-RANDOM-CONSUMABLE' USING INPUT-STRING.
+              STRING 
+                'You found a '
+                FUNCTION TRIM(INPUT-STRING)
+                ' while exploring.'
+                NEW-LINE
+                'It has been added to your consumables.'
+                INTO OUTPUT-STRING.
+              PERFORM PRINT.
+              SET STATE-ENTER-BIOME TO TRUE.
+
+
+       MANAGE-COLLECTION.
+           STRING
+               'What would you like to do?' NEW-LINE
+               '[1] Show Collection' NEW-LINE
+               '[2] Show Consumables' NEW-LINE
+               '[3] Feed Collectie' NEW-LINE
+               '[4] Rename Collectie' NEW-LINE
+               '[5] Set Protector' NEW-LINE
+               '[6] Exit' NEW-LINE
+               '?: '
+               into output-string.
+               
+               PERFORM PRINT-INLINE.
+               PERFORM ACCEPT-INPUT.
+
+               EVALUATE input-string
+                   WHEN '1'
+                       SET STATE-SHOW-COLLECTION TO TRUE
+                   WHEN '2'
+                       SET STATE-SHOW-CONSUMABLES TO TRUE
+                   WHEN '3'
+                       SET STATE-FEED-COLLECTIE TO TRUE
+                   WHEN '4'
+                       SET STATE-RENAME-EXISTING-COLLECTIE TO TRUE
+                   WHEN '5'
+                       SET STATE-SET-PROTECTOR TO TRUE
+                   WHEN '6'
+                       SET STATE-ENTER-BIOME TO TRUE
+                   WHEN OTHER
+                       MOVE 'unrecognized choice' to OUTPUT-STRING
+                       PERFORM PRINT
+                       SET STATE-MANAGE-COLLECTION TO TRUE
+               END-EVALUATE.
+
+       SHOW-COLLECTION.
+           CALL 'GET-COLLECTION' USING OUTPUT-STRING.
+           PERFORM PRINT.
+           SET STATE-MANAGE-COLLECTION TO TRUE.
+
+       SHOW-CONSUMABLES.
+              CALL 'GET-CONSUMABLES' USING OUTPUT-STRING.
+              PERFORM PRINT.
+              SET STATE-MANAGE-COLLECTION TO TRUE.
+
+       FEED-COLLECTIE.
+
+           STRING 'Select one of your collecties:'
+               NEW-LINE
+               'Collectie Collection'
+               INTO OUTPUT-STRING.
+               PERFORM PRINT.
+               CALL 'GET-COLLECTION' USING OUTPUT-STRING.
+               PERFORM PRINT.
+                MOVE '?: ' TO OUTPUT-STRING.
+                PERFORM PRINT-INLINE.
+                PERFORM ACCEPT-INPUT.
+                   MOVE 'Choose a consumable to give to Jojo:' 
+                       TO OUTPUT-STRING.
+                   PERFORM PRINT.
+                   CALL 'GET-CONSUMABLES' USING OUTPUT-STRING.
+                   PERFORM PRINT.
+                   MOVE '?: ' TO OUTPUT-STRING.
+                   PERFORM PRINT-INLINE.
+                   PERFORM ACCEPT-INPUT.
+      *>             CALL 'FEED-COLLECTIE' 
+      *>                 USING COLLECTIE-ID, INPUT-STRING.
+      *>         [1] Small Pizza with Dodud Sausage (4)
+      *>         ?: 1
+      *>         You give Jojo the Small Pizza with Dodud Sausage (4)
+      *>         Jojo could not finish all of the Small Pizza with Dodud Sausage (3).
+      *>         There is some left over for later.
+              SET STATE-MANAGE-COLLECTION TO TRUE.
+
+       RENAME-EXISTING-COLLECTIE.
+              display 'TODO rename collectie'.
+              SET STATE-MANAGE-COLLECTION TO TRUE.
+
+       SET-PROTECTOR.
+              display 'TODO set protector'.
+              SET STATE-MANAGE-COLLECTION TO TRUE.
+              
+       PRINT.
+           CALL 'output' USING OUTPUT-STRING.
+
+       PRINT-INLINE.
+           CALL 'output-inline' USING OUTPUT-STRING.
+
+       ACCEPT-INPUT.
+              CALL 'input' USING INPUT-STRING.
+
+
+       end program MainProgram.
+
+       copy 'lib/IO'.
+       copy 'lib/programs/Biome-Manager'.
+       copy 'lib/programs/Consumable-Manager'.
+       copy 'lib/programs/Collectie-Manager'.
+       copy 'lib/utils/Randomizer'.

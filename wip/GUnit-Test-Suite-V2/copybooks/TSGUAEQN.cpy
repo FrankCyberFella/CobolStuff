@@ -1,4 +1,4 @@
-       GU-Assert-Numeric-Not-Equal.
+       GU-Assert-Numeric-Equal.
 
       * Assert - Invoke Unit Test module
            add 1 to TS-Number-Tests-Performed.
@@ -12,7 +12,7 @@
              to TR-Actual-Value-Numeric(TS-Number-Tests-Performed).
            Move GU-Error-Msg to TR-Error-Msg(TS-Number-Tests-Performed).
            
-           Call 'GU-AssertNotEquals-Numeric' using GUnit-Test-Fields.
+           Call 'GU-AssertEquals-Numeric' using GUnit-Test-Fields.
 
            if GU-Test-Passed
               add 1 to TS-Number-Tests-Passed
@@ -26,7 +26,5 @@
                 to TR-Error-Msg(TS-Number-Tests-Performed)
            end-if.     
            
-       GU-Assert-Numeric-NE-Exit.
-           Exit.    
-
-  
+       GU-AssertEquals-Numeric-Exit.
+           Exit.

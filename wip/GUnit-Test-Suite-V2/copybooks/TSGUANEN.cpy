@@ -25,7 +25,7 @@
               move GU-Error-Msg 
                 to TR-Error-Msg(TS-Number-Tests-Performed)
            end-if.     
-           
+       12345678912345678921234567893    
        GU-Assert-Numeric-NE-Exit.
            Exit.    
 

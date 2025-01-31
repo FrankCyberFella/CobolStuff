@@ -1,0 +1,270 @@
+       Identification Division.
+       Program-id. Rextore-Tests.
+      
+       Data Division.
+       Working-Storage Section.
+      *>**************************************************************
+      *> Define any data needed by the program you are testing
+      *> that will be sent as parameters here
+      *>**************************************************************
+      
+       01  COLLECTIE-ID PIC 99 VALUE ZERO.
+       01  CLONE-ID PIC 99 VALUE ZERO.
+       01  mock-random-int PIC 999.
+       
+       REPLACE ==REXTORE== BY ==TEST-REXTORE-A==.
+       copy "lib/Rextore.cpy".
+
+       REPLACE ==REXTORE== BY ==TEST-REXTORE-B==.
+       copy "lib/Rextore.cpy".
+
+
+      *>**************************************************************
+      *> Copybook with Fields required/used by Test Suite Template
+      *> Fields will be set by GUnit and used however the programmer
+      *> deems necessary for thier test processing 
+      *>**************************************************************  
+       copy 'TSFields'.
+
+      *>**************************************************************
+      *> Copybook with Fields required/used by GUnit
+      *> Fields will be set by the caller and returned by GUnit 
+      *>**************************************************************
+       copy 'GUnitFld'.    
+       
+       Procedure Division.
+
+           Perform Run-Tests Thru Run-Tests-Exit.      
+           Perform TS-Show-Results.
+           Goback.
+       
+       *>************************************************************** 
+       Run-Tests.
+       *>************************************************************** 
+
+       TEST-CREATE.
+           move 'Check creation alt' to TS-Test-Description.
+
+           *> Arrange
+           perform GU-Initialize-Default-Values.
+           call 'INIT-COLLECTIES'.
+           move 123 to mock-random-int.
+           call 'set-random-int' using mock-random-int.
+           
+           *> Act    
+           call 'ADD-REXTORE' using TEST-REXTORE-A.
+
+           *> Assert name
+           move 'Rextore 123' to GU-Expected-Value-String.
+           move collectie-name of TEST-REXTORE-A 
+             to GU-Actual-Value-String.
+
+           *> Assert     
+           Perform GU-Assert-String-Equals.
+           
+           *> Assert sound
+           move 'rarwar' to GU-Expected-Value-String.
+           move sound of TEST-REXTORE-A to GU-Actual-Value-String.    
+           Perform GU-Assert-String-Equals.
+
+           *> Assert preferred biome
+           move 'VOLCANIC' to GU-Expected-Value-String.
+           move PREFERRED-BIOME of TEST-REXTORE-A 
+             to GU-Actual-Value-String.    
+           Perform GU-Assert-String-Equals.
+
+           *> Assert species
+           move 'Rextore' to GU-Expected-Value-String.
+           move species of TEST-REXTORE-A to GU-Actual-Value-String.    
+           Perform GU-Assert-String-Equals.
+
+           *> Assert type
+           move 'DINOSAUR' to GU-Expected-Value-String.
+           move collectie-type of TEST-REXTORE-A 
+             to GU-Actual-Value-String.    
+           Perform GU-Assert-String-Equals.
+
+           *> Assert Attack
+           move 10 to GU-Expected-Value-Numeric.
+           move attack-power of TEST-REXTORE-A 
+             to GU-Actual-Value-Numeric.
+           Perform GU-Assert-Numeric-Equal.
+
+           *> Assert Defend Floor
+           move 50 to GU-Expected-Value-Numeric.
+           move defend-floor of TEST-REXTORE-A 
+             to GU-Actual-Value-Numeric.
+           Perform GU-Assert-Numeric-Equal.
+
+
+       TEST-CREATE-MULTIPLES.
+           move 'Check creation of multiple' to TS-Test-Description.
+
+           *> Arrange
+           perform GU-Initialize-Default-Values.
+           call 'INIT-COLLECTIES'.
+           move 123 to mock-random-int.
+           call 'set-random-int' using mock-random-int.
+           move 'Rextore 123' to GU-Expected-Value-String.
+           
+           *> Act    
+           call 'ADD-REXTORE' using TEST-REXTORE-A.
+           move collectie-name of TEST-REXTORE-A 
+             to GU-Actual-Value-String.
+
+           *> Assert     
+           Perform GU-Assert-String-Equals.
+
+           *> Arrange
+           move 456 to mock-random-int.
+           call 'set-random-int' using mock-random-int.
+           move 'Rextore 456' to GU-Expected-Value-String.
+           
+           *> Act    
+           call 'ADD-REXTORE' using TEST-REXTORE-B.
+           move collectie-name of TEST-REXTORE-B 
+             to GU-Actual-Value-String.
+           
+           *> Assert     
+           Perform GU-Assert-String-Equals.
+
+       
+       TEST-DEFEND-FAIL-UNDER.
+           move 'Should fail to defend under' 
+             to TS-Test-Description.
+
+           *> Arrange
+           perform GU-Initialize-Default-Values.
+           move 49 to mock-random-int.
+           call 'set-random-int' using mock-random-int.
+           
+           move 0 to GU-Expected-Value-Numeric.
+           
+           *> Act    
+           call 'ADD-REXTORE' using TEST-REXTORE-A.
+           call 'DEFEND' 
+             using TEST-REXTORE-A, GU-Actual-Value-Numeric.
+           
+           *> Assert     
+           Perform GU-Assert-Numeric-Equal.
+
+       
+       TEST-DEFEND-FAIL-OVER.
+           move 'Should successfully defend over' 
+             to TS-Test-Description.
+
+           *> Arrange
+           perform GU-Initialize-Default-Values.
+           move 50 to mock-random-int.
+           call 'set-random-int' using mock-random-int.
+           
+           move 1 to GU-Expected-Value-Numeric.
+           
+           *> Act    
+           call 'ADD-REXTORE' using TEST-REXTORE-A.
+           call 'DEFEND' 
+             using TEST-REXTORE-A, GU-Actual-Value-Numeric.
+           
+           *> Assert     
+           Perform GU-Assert-Numeric-Equal.
+
+       
+       TEST-CLONE.
+           move 'should clone new instance with same values' 
+             to TS-Test-Description.
+
+           *> Arrange
+           perform GU-Initialize-Default-Values.
+           
+           *> Act    
+           call 'ADD-REXTORE' using TEST-REXTORE-A.
+           call 'CLONE' 
+             using TEST-REXTORE-A, TEST-REXTORE-B.
+
+           *> Assert Name matches 
+           move collectie-name of TEST-REXTORE-A 
+             to GU-Expected-Value-String. 
+           move collectie-name of TEST-REXTORE-B 
+             to GU-Actual-Value-String.   
+           Perform GU-Assert-String-Equals.
+
+           *> Assert Type matches 
+           move collectie-type of TEST-REXTORE-A 
+             to GU-Expected-Value-String. 
+           move collectie-type of TEST-REXTORE-B 
+             to GU-Actual-Value-String.   
+           Perform GU-Assert-String-Equals.
+
+           *> Assert sound matches 
+           move sound of TEST-REXTORE-A 
+             to GU-Expected-Value-String. 
+           move sound of TEST-REXTORE-B 
+             to GU-Actual-Value-String.   
+           Perform GU-Assert-String-Equals.
+
+           *> Assert species matches 
+           move species of TEST-REXTORE-A 
+             to GU-Expected-Value-String. 
+           move species of TEST-REXTORE-B 
+             to GU-Actual-Value-String.   
+           Perform GU-Assert-String-Equals.
+
+           *> Assert Preferred Biome matches 
+           move preferred-biome of TEST-REXTORE-A 
+             to GU-Expected-Value-String. 
+           move preferred-biome of TEST-REXTORE-B 
+             to GU-Actual-Value-String.   
+           Perform GU-Assert-String-Equals.
+
+           *> Assert Attack Power matches 
+           move attack-power of TEST-REXTORE-A 
+             to GU-Expected-Value-String. 
+           move attack-power of TEST-REXTORE-B 
+             to GU-Actual-Value-String.   
+           Perform GU-Assert-String-Equals.
+
+           *> Assert defend floor matches 
+           move defend-floor of TEST-REXTORE-A 
+             to GU-Expected-Value-String. 
+           move defend-floor of TEST-REXTORE-B 
+             to GU-Actual-Value-String.   
+           Perform GU-Assert-String-Equals.
+
+           *> Assert graphic matches 
+           move graphic of TEST-REXTORE-A 
+             to GU-Expected-Value-String. 
+           move graphic of TEST-REXTORE-B 
+             to GU-Actual-Value-String.   
+           Perform GU-Assert-String-Equals.
+
+
+      *>*************************************************************** 
+       Run-Tests-Exit.
+           exit.
+      *>*************************************************************** 
+       
+      *>****************************************************************
+      *> COPY Test Suite Features Desired/Used before end of program
+      *>****************************************************************
+       copy 'TSGUAEQN'. *> Assert Equals Numeric
+       copy 'TSGUANEN'. *> Assert NotEquals Numeric
+       copy 'TSGUAEQS'. *> Assert Equals String
+       copy 'TSGUANES'. *> Assert NotEquals String
+       copy 'TSShow'.   *> Test Suit Display Results
+       copy 'GUInit'.   *> GUnit Initialize to Defaults
+
+       end program Rextore-Tests.
+
+      *>****************************************************************
+      *> COPY program code to be tested AFTER end of Test Suite Program
+      *>****************************************************************      
+       copy 'GUnitV3'.
+      
+      *>****************************************************************
+      *> COPY program code to be tested AFTER end of Test Suite Program
+      *>****************************************************************
+       copy 'lib/programs/Collectie-Manager'.
+       copy 'lib/tests/Mock-Randomizer'.
+
+
+      
