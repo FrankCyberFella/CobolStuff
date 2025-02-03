@@ -1,9 +1,6 @@
         01 TS-Test-Number-Chars pic X(255).
         01 TS-Test-Description  pic X(255).
         01 TS-Test-Number-Out   pic zz9.
-        01 TS-Separator-Line         pic x(80) value all '-'.
-        01 TS-Test-Summary-String.
-           05 TS-Test-Summary-String-Table occurs 256 Times Pic X.
         01 TS-Test-Result-Table.
            05 TS-Test-Result  occurs 500 times  
                            indexed by Test-Result-Index.
@@ -26,14 +23,13 @@
               10 TR-Actual-String-Len-Used      pic s9(9) comp.
        
       * Number-Tests-Performed is also used as subscript for Test Results        
-        01 TS-Asserts-Performed  pic s9(3) comp value 0. 
-        01 TS-Asserts-Passed     Pic s9(3) comp-3.
-        01 TS-Asserts-Failed     Pic s9(3) comp-3.   
+        01 TS-Number-Tests-Performed  pic s9(3) comp value 0. 
+        01 TS-Number-Tests-Passed     Pic s9(3) comp-3.
+        01 TS-Number-Tests-Failed     Pic s9(3) comp-3.   
 
-        01 TS-Asserts-Performed-Out  Pic ZZ9. 
-        01 TS-Asserts-Passed-Out     Pic ZZ9.
-        01 TS-Asserts-Failed-Out     Pic ZZ9.  
-        
-        01 TS-String-Length-Expected Pic ++++9.
-        01 TS-String-Length-Actual   Pic ++++9. 
+        01 GU-InitializeDefaultValues      Pic x(8) value 'GUINIT'.
+        01 GU-AssertEquals-Numeric         Pic x(8) value 'GUAEQNUM'.
+        01 GU-AssertNotEquals-Numeric      pic x(8) value 'GUANENUM'.
+        01 GU-AssertEquals-String          pic x(8) value 'GUAEQSTR'.
+        01 GU-AssertNotEquals-String       pic x(8) value 'GUANESTR'.
       

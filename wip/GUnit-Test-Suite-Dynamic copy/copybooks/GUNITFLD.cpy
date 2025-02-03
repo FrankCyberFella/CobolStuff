@@ -43,15 +43,7 @@
                88  GU-Content-Lengths-Match         value 'Yes'.
                88  GU-Content-Lengths-Do-Not-Match  value 'No'.  
 
-           05 GU-Error-Msg     pic x(255).   
-      ******************************************************************
-      * Fields to use when using the dyamically called GUNit modules 
-      ******************************************************************  
-           05 GU-InitializeDefaultValues      Pic x(8) value 'GUINIT'.
-           05 GU-AssertEquals-Numeric         Pic x(8) value 'GUAEQNUM'.
-           05 GU-AssertNotEquals-Numeric      pic x(8) value 'GUANENUM'.
-           05 GU-AssertEquals-String          pic x(8) value 'GUAEQSTR'.
-           05 GU-AssertNotEquals-String       pic x(8) value 'GUANESTR'.           
+           05 GU-Error-Msg     pic x(255).           
 
       ******************************************************************
       * The following fields are currently unused by GUnit

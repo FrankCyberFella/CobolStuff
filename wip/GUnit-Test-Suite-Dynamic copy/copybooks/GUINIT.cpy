@@ -1,4 +1,4 @@
-       GU-Initialize-Default-Values.
+       GU-Init-Default-Values.
 
            Call GU-InitializeDefaultValues using GUnit-Test-Fields.
        

@@ -12,7 +12,7 @@
              to TR-Actual-Value-Numeric(TS-Number-Tests-Performed).
            Move GU-Error-Msg to TR-Error-Msg(TS-Number-Tests-Performed).
            
-           Call 'GU-AssertNotEquals-Numeric' using GUnit-Test-Fields.
+           Call GU-AssertNotEquals-Numeric using GUnit-Test-Fields.
 
            if GU-Test-Passed
               add 1 to TS-Number-Tests-Passed
@@ -25,7 +25,7 @@
               move GU-Error-Msg 
                 to TR-Error-Msg(TS-Number-Tests-Performed)
            end-if.     
-       12345678912345678921234567893    
+ 
        GU-Assert-Numeric-NE-Exit.
            Exit.    
 

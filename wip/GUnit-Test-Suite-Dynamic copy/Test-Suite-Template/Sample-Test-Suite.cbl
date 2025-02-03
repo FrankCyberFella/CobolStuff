@@ -23,7 +23,7 @@
       * Copybook with Fields required/used by GUnit
       * Fields will be set by the caller and returned by GUnit 
       ****************************************************************
-       copy 'GUNITFLD'.    
+       copy 'GUnitFld'.    
        
        procedure division.
 
@@ -50,7 +50,7 @@
       * Arrange - Setup data for test
 
       * Initialize GUnit-Test-Fields default values.
-           perform GU-Initialize-Default-Values.
+           perform GU-Init-Default-Values.
 
       * Set up GUnit-Test-Fields for test
            move "Test-1 - Verify Values Are Equal" *> Set Test Desc.
@@ -216,8 +216,8 @@
        copy 'TSGUANEN'. *> Assert NotEquals Numeric
        copy 'TSGUAEQS'. *> Assert Equals String
        copy 'TSGUANES'. *> Assert Not Equals String
-       copy 'TSShow'.   *> Test Suit Display Results
-       copy 'GUInit'.   *> GUnit Initialize to Defaults
+       copy 'TSSHOW'.   *> Test Suit Display Results
+       copy 'GUINIT'.   *> GUnit Initialize to Defaults
 
        end program TSTemplt.
 
@@ -225,8 +225,3 @@
       * COPY program code to be tested AFTER end of Test Suite Program
       ******************************************************************
        copy './appCalc.cbl'.             *> Program to be tested
-
-      ******************************************************************
-      * COPY program code to be tested AFTER end of Test Suite Program
-      ******************************************************************       
-      * copy 'GUnitV3'.   *> GUnit Code

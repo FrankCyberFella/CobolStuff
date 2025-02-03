@@ -1,34 +1,49 @@
        TS-Show-Results.
-      * Check test result returned by GUnit
-      * Process accordingly
+      *> Check test result returned by GUnit
+      *> Process accordingly
            Display '---- Testing Complete -----'.
            Display ' '.
            perform varying Test-Result-Index from 1 by 1
-           until Test-Result-Index > TS-Number-Tests-Performed 
+           until Test-Result-Index > TS-Asserts-Performed 
 
                if TR-Test-Passed(Test-Result-index)
-                   Display '.' with no advancing
+                  Move '.' 
+                    to TS-Test-Summary-String-Table(Test-Result-Index)
                else
-                   Display 'F' with no advancing
+                    Move 'F' 
+                    to TS-Test-Summary-String-Table(Test-Result-Index)
                end-if
            end-perform.  
-
-           Display ' '. 
+      
+           Display 'Test Summary: '. 
+           Display function trim(TS-Test-Summary-String).
            Display ' '.
 
-           Display 'Number tests performed: ' TS-Number-Tests-Performed.
-           Display 'Number tests passed: '    TS-Number-Tests-Passed.
-           Display 'Number tests failed: '    TS-Number-Tests-Failed.
+           Move TS-Asserts-Performed
+             to TS-Asserts-Performed-Out.
+
+           Move TS-Asserts-Passed
+             to TS-Asserts-Passed-Out.
+
+           Move TS-Asserts-Failed
+             to TS-Asserts-Failed-Out.    
+
+           Display 'Number asserts performed: ' 
+                    TS-Asserts-Performed-Out.
+           Display 'Number asserts passed: '    
+                    TS-Asserts-Passed-Out.
+           Display 'Number asserts failed: '    
+                    TS-Asserts-Failed-Out.
 
            Display ' '. 
            
            perform varying Test-Result-Index from 1 by 1
-                     until Test-Result-Index > TS-Number-Tests-Performed 
+                     until Test-Result-Index > TS-Asserts-Performed 
 
            if TR-Test-Failed(Test-Result-Index) 
-            
+               Display TS-Separator-Line
                Move Test-Result-Index to TS-Test-Number-Out 
-               display '  '
+
                Display 'Test #' TS-Test-Number-Out ' Failed: ' 
                    function trim(TR-Test-Description(Test-Result-Index)) 
                                      
@@ -36,16 +51,20 @@
                            TR-Expected-Value-Numeric(Test-Result-Index)
                Display '  Actual Number: ' 
                            TR-Actual-Value-Numeric(Test-Result-Index) 
-
+               Display ' '
+               Move TR-Expected-String-Len-Used(Test-Result-Index)
+                 to TS-String-Length-Expected
                Display 'Expected String Length Used: ' 
-                      TR-Expected-String-Len-Used(Test-Result-Index)
+                      TS-String-Length-Expected
 
                Display 'Expected String: ' 
                   function 
                    trim(TR-Expected-Value-String(Test-Result-Index))
-
+               Display ' '
+               Move TR-Actual-String-Len-Used(Test-Result-Index)
+                 to TS-String-Length-Actual
                Display 'Actual String Length Used: ' 
-                      TR-Actual-String-Len-Used(Test-Result-Index)
+                      TS-String-Length-Actual
     
                Display '  Actual String: ' 
                   function 
@@ -53,21 +72,12 @@
 
            end-perform.
 
-           Display ' '.
-
-           perform varying Test-Result-Index from 1 by 1
-                     until Test-Result-Index > TS-Number-Tests-Performed 
-           
-               if TR-Test-Passed(Test-Result-index)
-                   Display '.' with no advancing
-               else
-                   Display 'F' with no advancing
-               end-if
-           end-perform.  
+           Display ' '. 
+           Display 'Test Summary: '. 
+           Display function trim(TS-Test-Summary-String).
 
            Display ' '. 
            Display ' '.
 
        End-show-Results.
            exit.   
-           
